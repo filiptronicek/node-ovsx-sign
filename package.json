@@ -30,6 +30,8 @@
   },
   "devDependencies": {
     "@types/node": "^10.17.60",
+    "@typescript-eslint/eslint-plugin": "^5.52.0",
+    "@typescript-eslint/parser": "^5.52.0",
     "eslint": "^8.28.0",
     "rimraf": "^3.0.2",
     "typescript": "3.8.3"
