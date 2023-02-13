@@ -2,6 +2,12 @@
 
 This package is an open-source alternative to Microsoft's proprietary `node-vsce-sign`, which enables a feature in VS Code called [**Repository signing**](https://code.visualstudio.com/updates/v1_75#_vs-marketplace-extension-signing). 
 
+## Installing
+
+```sh
+npm i -g node-ovsx-sign
+```
+
 ## Example usage of signing [CLI]
 
 > **Note**: this requires access to the server-side private key for signing.
