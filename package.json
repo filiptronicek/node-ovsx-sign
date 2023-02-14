@@ -6,6 +6,19 @@
   "types": "lib/index",
   "keywords": [],
   "license": "EPL-2.0",
+  "contributors": [
+    {
+      "name": "Filip Troníček",
+      "email": "filip@gitpod.io"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/filiptronicek/node-ovsx-sign/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/filiptronicek/node-ovsx-sign"
+  },
   "files": [
     "lib",
     "src"
@@ -16,6 +29,7 @@
   "engines": {
     "node": ">= 14"
   },
+  "homepage": "https://open-vsx.org",
   "scripts": {
     "clean": "rimraf lib",
     "build": "tsc -p ./tsconfig.json && yarn run lint && cp src/node-ovsx-sign lib/node-ovsx-sign",
