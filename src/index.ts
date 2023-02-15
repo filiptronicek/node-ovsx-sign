@@ -1,5 +1,5 @@
 import * as commander from "commander";
-import { verify, sign } from "./utils/commands";
+import { verify, sign, keyPair } from "./utils/commands";
 import { ExtensionSignatureVerificationError } from "./utils/errors";
 
 export default function (argv: string[]): void {
@@ -30,6 +30,20 @@ export default function (argv: string[]): void {
     .arguments("<extension-package> <private-key>")
     .option("-o, --output <output>", "The path to the output signature archive")
     .action(sign);
+
+  const keyPairCmd = program.command("key-pair");
+  keyPairCmd
+    .description("Generate a ed25519 key pair")
+    .option("-o, --output-dir <output-dir>", "The directory to the output key pair")
+    .option("-f, --overwrite", "Overwrite existing key pair if it already exists")
+    .action(async ({ outputDir, overwrite }) => {
+      try {
+        await keyPair({ outputDir, overwrite });
+      } catch (e) {
+        console.error(e.message);
+        process.exit(1);
+      }
+    });
 
   program.parse(argv);
 

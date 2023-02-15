@@ -4,6 +4,7 @@ import { downloadPublicKey, loadPrivateKey, loadPublicKey } from './keys';
 import { signFile } from './sign';
 import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
+import * as crypto from 'crypto';
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -17,7 +18,7 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
     const privateKey = await loadPrivateKey(privateKeyFilePath);
     const outputPath = options?.output ?? `./${SIGNED_ARCHIVE_NAME}`;
 
-    const signature = await signFile(extensionFile, privateKey);
+    const signature = await signFile(extensionFile, privateKey) as Buffer;
     await fs.promises.writeFile(outputPath, signature);
 
     console.info(`Signature file created at ${outputPath}`);
@@ -54,4 +55,24 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
 
     console.info("Signature is valid");
     return true;
+};
+
+export const keyPair = async (options?: { outputDir?: string; overwrite: boolean; }): Promise<void> => {
+    const keyPairOptions = {
+        publicKeyEncoding: {
+            type: 'spki',
+            format: 'pem'
+        },
+        privateKeyEncoding: {
+            type: 'pkcs8',
+            format: 'pem'
+        }
+    };
+
+    const pair: unknown = crypto.generateKeyPairSync('ed25519', keyPairOptions);
+    const pairObj = pair as { publicKey: string, privateKey: string };
+    const outputDir = options?.outputDir ?? ".";
+    const flag = options?.overwrite ? "w" : "wx";
+    await fs.promises.writeFile(`${outputDir}/public.pem`, pairObj.publicKey, { flag });
+    await fs.promises.writeFile(`${outputDir}/private.pem`, pairObj.privateKey, { flag });
 };
