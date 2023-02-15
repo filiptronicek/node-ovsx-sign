@@ -1,0 +1,4 @@
+tasks:
+  - name: Develop
+    init: yarn
+    command: yarn watch
