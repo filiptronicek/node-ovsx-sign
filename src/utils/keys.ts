@@ -15,7 +15,7 @@ export const downloadPublicKey = async (): Promise<string> => {
     // Todo: Replace this with the real URL
     const urlOfPublicKey = "https://files.interclip.app/public_key_ovsx_sign.pem";
     console.log("Downloading public key from", urlOfPublicKey);
-    const publicKey = await new Promise((resolve, reject) => {
+    const publicKey: string = await new Promise((resolve, reject) => {
         https
             .get(urlOfPublicKey, (res) => {
                 let data = "";
