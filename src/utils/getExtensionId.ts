@@ -1,6 +1,6 @@
-import * as zip from 'vsce/out/zip';
+import { readVSIXPackage } from '@vscode/vsce/out/zip';
 
 export const getExtensionId = async (vsixPath: string): Promise<string> => {
-    const { manifest } = (await zip.readVSIXPackage(vsixPath));
+    const { manifest } = await readVSIXPackage(vsixPath);
     return manifest.publisher + '.' + manifest.name;
 };

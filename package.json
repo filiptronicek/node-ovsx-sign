@@ -44,10 +44,10 @@
     "publish:latest": "yarn publish --tag latest"
   },
   "dependencies": {
+    "@vscode/vsce": "^2.17.0",
     "commander": "^10.0.0",
     "download": "^8.0.0",
-    "node-fetch": "2.6.9",
-    "vsce": "^2.15.0"
+    "node-fetch": "2.6.9"
   },
   "devDependencies": {
     "@types/download": "^8.0.2",

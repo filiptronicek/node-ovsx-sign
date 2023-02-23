@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 
-import { PublicGalleryAPI } from 'vsce/out/publicgalleryapi';
+import { PublicGalleryAPI } from '@vscode/vsce/out/publicgalleryapi';
 import { ExtensionQueryFlags } from 'azure-devops-node-api/interfaces/GalleryInterfaces';
 
 import { DEFAULT_REGISTRY_URL, EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from '../src/utils/constants';
