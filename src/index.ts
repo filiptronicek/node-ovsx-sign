@@ -11,9 +11,10 @@ export default function (argv: string[]): void {
     .description("Verify an extension package")
     .arguments("<extension-package> <signature-archive>")
     .option("-p, --public-key <public-key>", "The path to the public key to use for verification")
-    .action(async (vsixFilePath: string, signatureArchiveFilePath: string, { publicKey }) => {
+    .option("-v, --verbose", "Capture verbose detail in the event of an error")
+    .action(async (vsixFilePath: string, signatureArchiveFilePath: string, { publicKey, verbose }) => {
       try {
-        await verify(vsixFilePath, signatureArchiveFilePath, { publicKey });
+        await verify(vsixFilePath, signatureArchiveFilePath, verbose, { publicKey });
       } catch (e) {
         if (e instanceof ExtensionSignatureVerificationError) {
           process.exit(e.code);

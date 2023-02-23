@@ -5,6 +5,7 @@ import { signFile } from './sign';
 import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from 'crypto';
+import { getExtensionId } from "./getExtensionId";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -28,10 +29,11 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
 * Verify an extension package against a signature archive
 * @param vsixFilePath The extension file path.
 * @param signatureArchiveFilePath The signature archive file path.
+* @param verbose A flag indicating whether or not to capture verbose detail in the event of an error.
 * @throws { ExtensionSignatureVerificationError } An error with a code indicating the validity, integrity, or trust issue
  * found during verification or a more fundamental issue (e.g.:  a required dependency was not found).
 */
-export const verify = async (vsixFilePath: string, signatureArchiveFilePath: string, options?: {
+export const verify = async (vsixFilePath: string, signatureArchiveFilePath: string, verbose = false, options?: {
     publicKey?: string;
 }): Promise<boolean> => {
 
@@ -43,9 +45,21 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
         throw new ExtensionSignatureVerificationError(6, false);
     }
 
+    verbose && console.info("Reading extension file");
     const extensionFile = await fs.promises.readFile(vsixFilePath);
-    const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey());
+
+
+    verbose && console.info("Getting extension id from extension manifest");
+    const extensionIdFromManifest = await getExtensionId(vsixFilePath);
+    verbose && console.info(`Got id: ${extensionIdFromManifest}`);
+
+    verbose && console.info("Loading public key");
+    const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey(extensionIdFromManifest));
+
+    verbose && console.info("Reading signature archive");
     const signature = await fs.promises.readFile(signatureArchiveFilePath);
+
+    verbose && console.info("Verifying signature");
     const signatureValid = await verifySignature(extensionFile, publicKey, signature);
 
     if (!signatureValid) {

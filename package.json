@@ -44,7 +44,9 @@
     "publish:latest": "yarn publish --tag latest"
   },
   "dependencies": {
-    "commander": "^10.0.0"
+    "commander": "^10.0.0",
+    "node-fetch": "2.6.9",
+    "vsce": "^2.15.0"
   },
   "devDependencies": {
     "@types/node": "^14.0.0",
