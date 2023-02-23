@@ -10,13 +10,15 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "strictNullChecks": true,
-        "outDir": "lib"
+        "outDir": "lib",
+        "forceConsistentCasingInFileNames": true
     },
     "include": [
         "src"
     ],
     "exclude": [
         "**/*.spec.ts",
-        "**/*.spec.tsx"
+        "**/*.spec.tsx",
+        "**/node_modules/**/*"
     ]
 }
