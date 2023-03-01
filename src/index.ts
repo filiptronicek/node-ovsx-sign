@@ -1,6 +1,5 @@
 import * as commander from "commander";
 import { verify, sign, keyPair } from "./utils/commands";
-import { ExtensionSignatureVerificationError } from "./utils/errors";
 
 export default function (argv: string[]): void {
   const program = new commander.Command();
@@ -16,12 +15,8 @@ export default function (argv: string[]): void {
       try {
         await verify(vsixFilePath, signatureArchiveFilePath, verbose, { publicKey });
       } catch (e) {
-        if (e instanceof ExtensionSignatureVerificationError) {
-          process.exit(e.code);
-        } else {
-          console.error(e.message);
-          process.exit(1);
-        }
+        console.error(e.message);
+        process.exit(1);
       }
     });
 
