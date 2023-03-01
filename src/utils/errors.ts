@@ -1,9 +1,11 @@
 export class ExtensionSignatureVerificationError extends Error {
-    code: number;
+    code: string;
     didExecute: boolean;
-    constructor(code: number, didExecute: boolean) {
+    output: string;
+    constructor(code: string, didExecute: boolean, output: string) {
         super();
         this.code = code;
         this.didExecute = didExecute;
+        this.output = output;
     }
 }

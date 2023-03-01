@@ -38,16 +38,15 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
 }): Promise<boolean> => {
 
     if (!fs.existsSync(vsixFilePath)) {
-        throw new ExtensionSignatureVerificationError(3, false);
+        throw new ExtensionSignatureVerificationError("PackageIsInvalidZip", false, "The extension package is not a valid zip file");
     }
 
     if (!fs.existsSync(signatureArchiveFilePath)) {
-        throw new ExtensionSignatureVerificationError(6, false);
+        throw new ExtensionSignatureVerificationError("SignatureArchiveIsInvalidZip", false, "The signature archive is not a valid zip file");
     }
 
     verbose && console.info("Reading extension file");
     const extensionFile = await fs.promises.readFile(vsixFilePath);
-
 
     verbose && console.info("Getting extension id from extension manifest");
     const extensionIdFromManifest = await getExtensionId(vsixFilePath);
@@ -64,7 +63,7 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
 
     if (!signatureValid) {
         console.error("Signature is not valid");
-        throw new ExtensionSignatureVerificationError(102, true);
+        throw new ExtensionSignatureVerificationError("SignatureManifestIsInvalid", true, "The signature is not valid");
     }
 
     console.info("Signature is valid");
