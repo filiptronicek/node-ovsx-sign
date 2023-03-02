@@ -1,5 +1,6 @@
 import * as commander from "commander";
 import { verify, sign, keyPair } from "./utils/commands";
+import { ExtensionSignatureVerificationError } from "./utils/errors";
 
 export default function (argv: string[]): void {
   const program = new commander.Command();
@@ -48,4 +49,4 @@ export default function (argv: string[]): void {
   }
 }
 
-export { sign, verify };
+export { sign, verify, ExtensionSignatureVerificationError };
