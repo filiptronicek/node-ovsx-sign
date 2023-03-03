@@ -1,13 +1,9 @@
-import * as download from 'download';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
-
 import { PublicGalleryAPI } from '@vscode/vsce/out/publicgalleryapi';
 import { ExtensionQueryFlags } from 'azure-devops-node-api/interfaces/GalleryInterfaces';
 
 import { DEFAULT_REGISTRY_URL, EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from '../src/utils/constants';
 import { verify } from '../src';
+import { download } from '../src/utils/download';
 
 const openGalleryApi = new PublicGalleryAPI(`${process.env.OVSX_REGISTRY_URL || DEFAULT_REGISTRY_URL}/vscode`, '3.0-preview.1');
 openGalleryApi.client['_allowRetries'] = true;
@@ -24,6 +20,8 @@ const extension = {
     id: 'ms-python.python'
 }
 
+jest.setTimeout(20_000); 
+
 describe('extensionTest', () => {
     test('be able to verify an extension', async () => {
         const [ovsxExtension] = await Promise.allSettled([openGalleryApi.getExtension(extension.id, flags)]);
@@ -35,14 +33,15 @@ describe('extensionTest', () => {
             expect(vsixUrl).toBeDefined();
             expect(vsixSignature).toBeDefined();
 
-            const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'ovsx-'));
+            const packageLocation = await download(vsixUrl.source, { filename: EXTENSION_PACKAGE_NAME });
+            const signatureLocation = await download(vsixSignature.source, { filename: SIGNED_ARCHIVE_NAME });
 
-            await download(vsixUrl.source, tmpDir, { filename: EXTENSION_PACKAGE_NAME });
-            await download(vsixSignature.source, tmpDir, { filename: SIGNED_ARCHIVE_NAME });
-
-            const verificationResult = await verify(path.join(tmpDir, EXTENSION_PACKAGE_NAME), path.join(tmpDir, SIGNED_ARCHIVE_NAME));
+            console.time('verify');
+            const verificationResult = await verify(packageLocation, signatureLocation);
+            console.timeEnd('verify');
             expect(verificationResult).toBe(true);
         }
+
         expect(ovsxExtension.status).toBe('fulfilled');
     });
 });

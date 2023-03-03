@@ -1,10 +1,8 @@
 import * as fs from 'fs';
-import * as os from "os";
-import * as path from "path";
 import fetch from "node-fetch";
 
 import { DEFAULT_REGISTRY_URL } from './constants';
-import download = require('download');
+import { download } from './download';
 
 export const loadPrivateKey = (keyPath: string): Promise<string> => {
     return fs.promises.readFile(keyPath, 'utf8');
@@ -51,16 +49,7 @@ const getPulicKeyUrl = async (extensionId: string): Promise<string> => {
 
 export const downloadPublicKey = async (extensionId: string): Promise<string> => {
     const urlOfPublicKey = await getPulicKeyUrl(extensionId);
-
-    console.log("Downloading public key from", urlOfPublicKey);
-
-    const downloadLocation = path.join(
-        os.tmpdir(),
-        `ovsx-sign-keys/public_key.pem`
-    );
-
-    console.info("Downloading public key to", downloadLocation);
-    await download(urlOfPublicKey, path.dirname(downloadLocation), { filename: path.basename(downloadLocation) });
+    const downloadLocation = await download(urlOfPublicKey, { filename: 'public.pem' });
 
     return downloadLocation;
 };
