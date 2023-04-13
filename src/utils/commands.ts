@@ -5,7 +5,7 @@ import { signFile } from './sign';
 import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from 'crypto';
-import { getExtensionId } from "./getExtensionId";
+import { getExtensionMeta } from "./getExtensionMeta";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -49,11 +49,16 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
     const extensionFile = await fs.promises.readFile(vsixFilePath);
 
     verbose && console.info("Getting extension id from extension manifest");
-    const extensionIdFromManifest = await getExtensionId(vsixFilePath);
-    verbose && console.info(`Got id: ${extensionIdFromManifest}`);
+    const extensionMetaFromManifest = await getExtensionMeta(vsixFilePath);
+
+    if (!extensionMetaFromManifest.id) {
+        throw new ExtensionSignatureVerificationError("ExtensionManifestIsInvalid", false, "The extension manifest is not valid");
+    }
+
+    verbose && console.info(`Got extension metadata for ${extensionMetaFromManifest.id}`);
 
     verbose && console.info("Loading public key");
-    const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey(extensionIdFromManifest));
+    const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey(extensionMetaFromManifest));
 
     verbose && console.info("Reading signature archive");
     const signature = await fs.promises.readFile(signatureArchiveFilePath);
