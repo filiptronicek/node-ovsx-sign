@@ -41,7 +41,8 @@
     "lint": "eslint -c ./configs/eslintrc.json --ext .ts src",
     "prepare": "yarn run clean && yarn run build",
     "publish:next": "yarn publish --new-version \"$(semver $npm_package_version -i minor)-next.$(git rev-parse --short HEAD)\" --tag next --no-git-tag-version",
-    "publish:latest": "yarn publish --tag latest"
+    "publish:latest": "yarn publish --tag latest",
+    "test": "jest"
   },
   "dependencies": {
     "@vscode/vsce": "^2.18.0",
@@ -61,3 +62,4 @@
     "typescript": "^4.9.5"
   }
 }
+
