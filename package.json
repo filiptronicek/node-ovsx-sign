@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@vscode/vsce": "^2.18.0",
-    "commander": "^10.0.0",
+    "commander": "^10.0.1",
     "node-fetch": "2.6.9"
   },
   "devDependencies": {
