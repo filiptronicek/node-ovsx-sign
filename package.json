@@ -47,7 +47,7 @@
   "dependencies": {
     "@vscode/vsce": "^2.21.0",
     "commander": "^10.0.1",
-    "node-fetch": "2.6.12"
+    "node-fetch": "2.7.0"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
