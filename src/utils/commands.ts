@@ -25,6 +25,7 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
     const files = [
         { filename: ".signature", buffer: signature },
         // We leave the p7s file empty because VS Code expects it to be present
+        // https://github.com/microsoft/vscode/blob/0ead1f80c9e0d6ea0732c40faea3095c6f7f165a/src/vs/platform/extensionManagement/node/extensionDownloader.ts#L157
         { filename: ".signature.p7s", buffer: Buffer.alloc(0) }
     ];
     const zippedSignature = await zipBuffers(files);
