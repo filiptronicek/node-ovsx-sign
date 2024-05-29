@@ -6,6 +6,7 @@ import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from 'crypto';
 import { getExtensionMeta } from "./getExtensionMeta";
+import { zipBuffers } from "./zip";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -19,8 +20,16 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
     const privateKey = await loadPrivateKey(privateKeyFilePath);
     const outputPath = options?.output ?? `./${SIGNED_ARCHIVE_NAME}`;
 
-    const signature = await signFile(extensionFile, privateKey) as Buffer;
-    await fs.promises.writeFile(outputPath, signature);
+    const signature = await signFile(extensionFile, privateKey);
+
+    const files = [
+        { filename: ".signature", buffer: signature },
+        // We leave the p7s file empty because VS Code expects it to be present
+        { filename: ".signature.p7s", buffer: Buffer.alloc(0) }
+    ];
+    const zippedSignature = await zipBuffers(files);
+
+    await fs.promises.writeFile(outputPath, zippedSignature);
 
     console.info(`Signature file created at ${outputPath}`);
 };
