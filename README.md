@@ -23,8 +23,8 @@ import { verify, ExtensionSignatureVerificationError } from "node-ovsx-sign";
 
 (async () => {
     try {
-        await verify("ext.vsix", "ext.sigzip");
-        console.log("Verified successfully");
+        await verify("extension.vsix", "extension.sigzip");
+        console.log("Signature verified successfully");
     } catch (e) {
         if (e instanceof ExtensionSignatureVerificationError) {
             console.error("Could not verify extension signature");
