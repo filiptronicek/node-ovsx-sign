@@ -6,7 +6,7 @@ import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from 'crypto';
 import { getExtensionMeta } from "./getExtensionMeta";
-import { zipBuffers } from "./zip";
+import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -37,7 +37,7 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
 /**
 * Verify an extension package against a signature archive
 * @param vsixFilePath The extension file path.
-* @param signatureArchiveFilePath The signature archive file path.
+* @param signatureArchiveFilePath The signature archive file path (`.sigzip`).
 * @param verbose A flag indicating whether or not to capture verbose detail in the event of an error.
 * @throws { ExtensionSignatureVerificationError } An error with a code indicating the validity, integrity, or trust issue
  * found during verification or a more fundamental issue (e.g.:  a required dependency was not found).
@@ -70,7 +70,9 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
     const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey(extensionMetaFromManifest));
 
     verbose && console.info("Reading signature archive");
-    const signature = await fs.promises.readFile(signatureArchiveFilePath);
+    const signature = await extractFileAsBufferUsingStreams(signatureArchiveFilePath, ".signature").catch(() => {
+        throw new ExtensionSignatureVerificationError("SignatureIsMissing", false, "The signature is missing from the signature archive");
+    });
 
     verbose && console.info("Verifying signature");
     const signatureValid = await verifySignature(extensionFile, publicKey, signature);
