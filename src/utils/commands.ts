@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { ExtensionSignatureVerificationError } from "./errors";
-import { downloadPublicKey, loadPrivateKey, loadPublicKey } from './keys';
-import { signFile } from './sign';
+import { downloadPublicKey, loadPrivateKey, loadPublicKey } from "./keys";
+import { signFile } from "./sign";
 import { SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
-import * as crypto from 'crypto';
+import * as crypto from "crypto";
 import { getExtensionMeta } from "./getExtensionMeta";
 import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 
@@ -13,9 +13,13 @@ import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
  * @param vsixFilePath the path to the `.vsix` file of the extension
  * @param privateKeyFilePath the path to the private key used to sign the extension
  */
-export const sign = async (vsixFilePath: string, privateKeyFilePath: string, options?: {
-    output?: string;
-}): Promise<void> => {
+export const sign = async (
+    vsixFilePath: string,
+    privateKeyFilePath: string,
+    options?: {
+        output?: string;
+    },
+): Promise<void> => {
     const extensionFile = await fs.promises.readFile(vsixFilePath);
     const privateKey = await loadPrivateKey(privateKeyFilePath);
     const outputPath = options?.output ?? `./${SIGNED_ARCHIVE_NAME}`;
@@ -26,7 +30,7 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
         { filename: ".signature", buffer: signature },
         // We leave the p7s file empty because VS Code expects it to be present
         // https://github.com/microsoft/vscode/blob/0ead1f80c9e0d6ea0732c40faea3095c6f7f165a/src/vs/platform/extensionManagement/node/extensionDownloader.ts#L157
-        { filename: ".signature.p7s", buffer: Buffer.alloc(0) }
+        { filename: ".signature.p7s", buffer: Buffer.alloc(0) },
     ];
     const zippedSignature = await zipBuffers(files);
 
@@ -36,23 +40,35 @@ export const sign = async (vsixFilePath: string, privateKeyFilePath: string, opt
 };
 
 /**
-* Verify an extension package against a signature archive
-* @param vsixFilePath The extension file path.
-* @param signatureArchiveFilePath The signature archive file path (`.sigzip`).
-* @param verbose A flag indicating whether or not to capture verbose detail in the event of an error.
-* @throws { ExtensionSignatureVerificationError } An error with a code indicating the validity, integrity, or trust issue
+ * Verify an extension package against a signature archive
+ * @param vsixFilePath The extension file path.
+ * @param signatureArchiveFilePath The signature archive file path (`.sigzip`).
+ * @param verbose A flag indicating whether or not to capture verbose detail in the event of an error.
+ * @throws { ExtensionSignatureVerificationError } An error with a code indicating the validity, integrity, or trust issue
  * found during verification or a more fundamental issue (e.g.:  a required dependency was not found).
-*/
-export const verify = async (vsixFilePath: string, signatureArchiveFilePath: string, verbose = false, options?: {
-    publicKey?: string;
-}): Promise<boolean> => {
-
+ */
+export const verify = async (
+    vsixFilePath: string,
+    signatureArchiveFilePath: string,
+    verbose = false,
+    options?: {
+        publicKey?: string;
+    },
+): Promise<boolean> => {
     if (!fs.existsSync(vsixFilePath)) {
-        throw new ExtensionSignatureVerificationError("PackageIsInvalidZip", false, "The extension package is not a valid zip file");
+        throw new ExtensionSignatureVerificationError(
+            "PackageIsInvalidZip",
+            false,
+            "The extension package is not a valid zip file",
+        );
     }
 
     if (!fs.existsSync(signatureArchiveFilePath)) {
-        throw new ExtensionSignatureVerificationError("SignatureArchiveIsInvalidZip", false, "The signature archive is not a valid zip file");
+        throw new ExtensionSignatureVerificationError(
+            "SignatureArchiveIsInvalidZip",
+            false,
+            "The signature archive is not a valid zip file",
+        );
     }
 
     verbose && console.info("Reading extension file");
@@ -62,17 +78,25 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
     const extensionMetaFromManifest = await getExtensionMeta(vsixFilePath);
 
     if (!extensionMetaFromManifest.id) {
-        throw new ExtensionSignatureVerificationError("ExtensionManifestIsInvalid", false, "The extension manifest is not valid");
+        throw new ExtensionSignatureVerificationError(
+            "ExtensionManifestIsInvalid",
+            false,
+            "The extension manifest is not valid",
+        );
     }
 
     verbose && console.info(`Got extension metadata for ${extensionMetaFromManifest.id}`);
 
     verbose && console.info("Loading public key");
-    const publicKey = await loadPublicKey(options?.publicKey || await downloadPublicKey(extensionMetaFromManifest));
+    const publicKey = await loadPublicKey(options?.publicKey || (await downloadPublicKey(extensionMetaFromManifest)));
 
     verbose && console.info("Reading signature archive");
     const signature = await extractFileAsBufferUsingStreams(signatureArchiveFilePath, ".signature").catch(() => {
-        throw new ExtensionSignatureVerificationError("SignatureIsMissing", false, "The signature is missing from the signature archive");
+        throw new ExtensionSignatureVerificationError(
+            "SignatureIsMissing",
+            false,
+            "The signature is missing from the signature archive",
+        );
     });
 
     verbose && console.info("Verifying signature");
@@ -87,20 +111,20 @@ export const verify = async (vsixFilePath: string, signatureArchiveFilePath: str
     return true;
 };
 
-export const keyPair = async (options?: { outputDir?: string; overwrite: boolean; }): Promise<void> => {
+export const keyPair = async (options?: { outputDir?: string; overwrite: boolean }): Promise<void> => {
     const keyPairOptions = {
         publicKeyEncoding: {
-            type: 'spki',
-            format: 'pem'
+            type: "spki",
+            format: "pem",
         },
         privateKeyEncoding: {
-            type: 'pkcs8',
-            format: 'pem'
-        }
+            type: "pkcs8",
+            format: "pem",
+        },
     };
 
-    const pair: unknown = crypto.generateKeyPairSync('ed25519', keyPairOptions);
-    const pairObj = pair as { publicKey: string, privateKey: string };
+    const pair: unknown = crypto.generateKeyPairSync("ed25519", keyPairOptions);
+    const pairObj = pair as { publicKey: string; privateKey: string };
     const outputDir = options?.outputDir ?? ".";
     const flag = options?.overwrite ? "w" : "wx";
     await fs.promises.writeFile(`${outputDir}/public.pem`, pairObj.publicKey, { flag });

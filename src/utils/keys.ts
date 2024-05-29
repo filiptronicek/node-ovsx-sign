@@ -1,16 +1,16 @@
-import * as fs from 'fs';
+import * as fs from "fs";
 import fetch from "node-fetch";
 
-import { DEFAULT_REGISTRY_URL } from './constants';
-import { download } from './download';
-import { ExtensionMeta } from './getExtensionMeta';
+import { DEFAULT_REGISTRY_URL } from "./constants";
+import { download } from "./download";
+import { ExtensionMeta } from "./getExtensionMeta";
 
 export const loadPrivateKey = (keyPath: string): Promise<string> => {
-    return fs.promises.readFile(keyPath, 'utf8');
+    return fs.promises.readFile(keyPath, "utf8");
 };
 
 export const loadPublicKey = (keyPath: string): Promise<string> => {
-    return fs.promises.readFile(keyPath, 'utf8');
+    return fs.promises.readFile(keyPath, "utf8");
 };
 
 const ensureValidPublicKeyUrl = async (url: string): Promise<string> => {
@@ -26,7 +26,8 @@ const getPulicKeyUrl = async (extension: ExtensionMeta): Promise<string> => {
     const registryUrl = new URL(process.env.OVSX_REGISTRY_URL || DEFAULT_REGISTRY_URL);
     const defaultPublicKeyUrl = registryUrl.toString() + `file/public.pem`;
 
-    const registryApiEndpoint = registryUrl.toString() + `api/${extension.id.split(".").join("/")}/${extension.version}`;
+    const registryApiEndpoint =
+        registryUrl.toString() + `api/${extension.id.split(".").join("/")}/${extension.version}`;
 
     const extensionApiResponse = await fetch(registryApiEndpoint.toString());
     if (!extensionApiResponse.ok) {
@@ -50,8 +51,7 @@ const getPulicKeyUrl = async (extension: ExtensionMeta): Promise<string> => {
 
 export const downloadPublicKey = async (extension: ExtensionMeta): Promise<string> => {
     const urlOfPublicKey = await getPulicKeyUrl(extension);
-    const downloadLocation = await download(urlOfPublicKey, { filename: 'public.pem' });
+    const downloadLocation = await download(urlOfPublicKey, { filename: "public.pem" });
 
     return downloadLocation;
 };
-
