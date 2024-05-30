@@ -38,7 +38,7 @@ export const zipBuffers = async (files: { filename: string; buffer: Buffer }[]):
 /**
  * Extract a specific file from a zip archive as a buffer using streams
  * @param zipFilePath The path to the zip file
- * @param fileName The name of the file to extract (e.g., ".signature")
+ * @param fileName The name of the file to extract (e.g., ".signature.sig")
  * @returns A promise that resolves to a buffer containing the file contents
  */
 export const extractFileAsBufferUsingStreams = async (zipFilePath: string, fileName: string): Promise<Buffer> => {

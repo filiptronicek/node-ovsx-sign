@@ -2,7 +2,7 @@ import * as fs from "fs";
 import { ExtensionSignatureVerificationError } from "./errors";
 import { downloadPublicKey, loadPrivateKey, loadPublicKey } from "./keys";
 import { signFile } from "./sign";
-import { SIGNED_ARCHIVE_NAME } from "./constants";
+import { SIGNATURE_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from "crypto";
 import { getExtensionMeta } from "./getExtensionMeta";
@@ -27,7 +27,7 @@ export const sign = async (
     const signature = await signFile(extensionFile, privateKey);
 
     const files = [
-        { filename: ".signature", buffer: signature },
+        { filename: SIGNATURE_FILE_NAME, buffer: signature },
         // We leave the p7s file empty because VS Code expects it to be present
         // https://github.com/microsoft/vscode/blob/0ead1f80c9e0d6ea0732c40faea3095c6f7f165a/src/vs/platform/extensionManagement/node/extensionDownloader.ts#L157
         { filename: ".signature.p7s", buffer: Buffer.alloc(0) },
@@ -91,7 +91,7 @@ export const verify = async (
     const publicKey = await loadPublicKey(options?.publicKey || (await downloadPublicKey(extensionMetaFromManifest)));
 
     verbose && console.info("Reading signature archive");
-    const signature = await extractFileAsBufferUsingStreams(signatureArchiveFilePath, ".signature").catch(() => {
+    const signature = await extractFileAsBufferUsingStreams(signatureArchiveFilePath, SIGNATURE_FILE_NAME).catch(() => {
         throw new ExtensionSignatureVerificationError(
             "SignatureIsMissing",
             false,
