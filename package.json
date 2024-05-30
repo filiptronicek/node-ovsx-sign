@@ -31,7 +31,7 @@
     "node-ovsx-sign": "lib/node-ovsx-sign"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 18"
   },
   "homepage": "https://open-vsx.org",
   "scripts": {
