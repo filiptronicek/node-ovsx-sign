@@ -1,5 +1,5 @@
 import { download } from "./download";
-import { getExtensionMeta } from "./getExtensionMeta";
+import { getExtensionMeta } from "./extension-metadata";
 import { unlink } from "fs/promises";
 
 jest.setTimeout(20_000);
