@@ -23,7 +23,7 @@ const extension = {
 jest.setTimeout(20_000);
 
 describe("extensionTest", () => {
-    test("be able to verify an extension", async () => {
+    test("be able to download an extension archive, its signature and public key from Open VSX and verify the archive", async () => {
         const [ovsxExtension] = await Promise.allSettled([openGalleryApi.getExtension(extension.id, flags)]);
         if (ovsxExtension.status === "fulfilled") {
             const vsixUrl = ovsxExtension.value.versions[0].files.find(
