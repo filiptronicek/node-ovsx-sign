@@ -7,6 +7,7 @@ import { verifySignature } from "./verify";
 import * as crypto from "crypto";
 import { getExtensionMeta } from "./getExtensionMeta";
 import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
+import { generateSignatureManifest } from "./signature-manifest";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
@@ -25,9 +26,11 @@ export const sign = async (
     const outputPath = options?.output ?? `./${SIGNED_ARCHIVE_NAME}`;
 
     const signature = await signFile(extensionFile, privateKey);
+    const signatureManifest = await generateSignatureManifest(vsixFilePath);
 
     const files = [
         { filename: SIGNATURE_FILE_NAME, buffer: signature },
+        { filename: ".signature.manifest", buffer: Buffer.from(JSON.stringify(signatureManifest)) },
         // We leave the p7s file empty because VS Code expects it to be present
         // https://github.com/microsoft/vscode/blob/0ead1f80c9e0d6ea0732c40faea3095c6f7f165a/src/vs/platform/extensionManagement/node/extensionDownloader.ts#L157
         { filename: ".signature.p7s", buffer: Buffer.alloc(0) },
