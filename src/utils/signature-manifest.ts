@@ -1,6 +1,6 @@
-import { readZip } from "@vscode/vsce/out/zip";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
+import { readZip } from "./zip";
 
 type VsixSignatureManifest = {
     package: {
@@ -20,14 +20,14 @@ type VsixSignatureManifest = {
 };
 
 /**
- * @returns a sha256 hash of the file
+ * @returns a sha256 hash of the file in base64
  */
 const fileSha256 = async (file: Buffer): Promise<string> => {
     return new Promise((resolve, reject) => {
         try {
             const hash = createHash("sha256");
             hash.update(file);
-            const digest = hash.digest("hex");
+            const digest = hash.digest("base64");
             resolve(digest);
         } catch (error) {
             reject(error);
@@ -39,7 +39,7 @@ const toBase64 = (string: string): string => Buffer.from(string).toString("base6
 
 export const generateSignatureManifest = async (vsixFilePath: string): Promise<VsixSignatureManifest> => {
     const extensionPackage = await fs.readFile(vsixFilePath);
-    const extensionPackageContentsDetails: Map<string, Buffer> = await readZip(vsixFilePath, (entry) => true);
+    const extensionPackageContentsDetails: Map<string, Buffer> = await readZip(vsixFilePath);
 
     const entries: VsixSignatureManifest["entries"] = {};
     for (const [entryPath, entryContent] of extensionPackageContentsDetails.entries()) {
