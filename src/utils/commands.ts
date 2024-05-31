@@ -48,7 +48,7 @@ export const sign = async (
  * @param signatureArchiveFilePath The signature archive file path (`.sigzip`).
  * @param verbose A flag indicating whether or not to capture verbose detail in the event of an error.
  * @throws { ExtensionSignatureVerificationError } An error with a code indicating the validity, integrity, or trust issue
- * found during verification or a more fundamental issue (e.g.:  a required dependency was not found).
+ * found during verification or a more fundamental issue (e.g. a required dependency was not found).
  */
 export const verify = async (
     vsixFilePath: string,
