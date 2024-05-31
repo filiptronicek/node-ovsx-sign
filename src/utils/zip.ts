@@ -1,11 +1,13 @@
 import * as archiver from "archiver";
 import * as unzipper from "unzipper";
-import * as fs from "fs";
-import { Writable } from "stream";
+import { Entry, open, ZipFile } from 'yauzl';
+import { Readable } from 'stream';
+import * as fs from "node:fs";
+import { Writable } from "node:stream";
 
 export const zipBuffers = async (files: { filename: string; buffer: Buffer }[]): Promise<Buffer> => {
     return new Promise<Buffer>((resolve, reject) => {
-        const archive = archiver("zip", {
+        const archive = archiver.default("zip", {
             zlib: { level: 9 },
         });
 
@@ -64,3 +66,43 @@ export const extractFileAsBufferUsingStreams = async (zipFilePath: string, fileN
             });
     });
 };
+
+async function bufferStream(stream: Readable): Promise<Buffer> {
+    return await new Promise((resolve, reject) => {
+        const buffers: Buffer[] = [];
+        stream.on('data', buffer => buffers.push(buffer));
+        stream.once('error', reject);
+        stream.once('end', () => resolve(Buffer.concat(buffers)));
+    });
+}
+
+// Modified version of https://github.com/microsoft/vscode-vsce/blob/fd9a2627e29c031829e550b9bde2ce2282d99a3d/src/zip.ts#L15
+// Changes: removed the `filter` parameter, renamed some variables and prevented returning lowercase keys
+export async function readZip(packagePath: string): Promise<Map<string, Buffer>> {
+    const zipfile = await new Promise<ZipFile>((c, e) =>
+        open(packagePath, { lazyEntries: true }, (err, zipfile) => (err ? e(err) : c(zipfile!)))
+    );
+
+    return await new Promise((resolve, reject) => {
+        const result = new Map<string, Buffer>();
+
+        zipfile.once('close', () => resolve(result));
+
+        zipfile.readEntry();
+        zipfile.on('entry', (entry: Entry) => {
+            const name = entry.fileName;
+
+            zipfile.openReadStream(entry, (err, stream) => {
+                if (err) {
+                    zipfile.close();
+                    return reject(err);
+                }
+
+                bufferStream(stream!).then(buffer => {
+                    result.set(name, buffer);
+                    zipfile.readEntry();
+                });
+            });
+        });
+    });
+}
