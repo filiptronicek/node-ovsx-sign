@@ -5,7 +5,7 @@ import { signFile } from "./sign";
 import { SIGNATURE_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
 import { verifySignature } from "./verify";
 import * as crypto from "crypto";
-import { getExtensionMeta } from "./getExtensionMeta";
+import { getExtensionMeta } from "./extension-metadata";
 import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 import { generateSignatureManifest } from "./signature-manifest";
 
@@ -114,7 +114,13 @@ export const verify = async (
     return true;
 };
 
-export const keyPair = async (options?: { outputDir?: string; overwrite: boolean }): Promise<void> => {
+export const keyPair = async (options?: {
+    outputDir?: string;
+    overwrite: boolean;
+}): Promise<{
+    privateKeyPath: string;
+    publicKeyPath: string;
+}> => {
     const keyPairOptions = {
         publicKeyEncoding: {
             type: "spki",
@@ -130,6 +136,12 @@ export const keyPair = async (options?: { outputDir?: string; overwrite: boolean
     const pairObj = pair as { publicKey: string; privateKey: string };
     const outputDir = options?.outputDir ?? ".";
     const flag = options?.overwrite ? "w" : "wx";
-    await fs.promises.writeFile(`${outputDir}/public.pem`, pairObj.publicKey, { flag });
-    await fs.promises.writeFile(`${outputDir}/private.pem`, pairObj.privateKey, { flag });
+
+    const publicKeyPath = `${outputDir}/public.pem`;
+    const privateKeyPath = `${outputDir}/private.pem`;
+
+    await fs.promises.writeFile(publicKeyPath, pairObj.publicKey, { flag });
+    await fs.promises.writeFile(privateKeyPath, pairObj.privateKey, { flag });
+
+    return { publicKeyPath, privateKeyPath };
 };

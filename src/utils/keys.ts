@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 import { DEFAULT_REGISTRY_URL } from "./constants";
 import { download } from "./download";
-import { ExtensionMeta } from "./getExtensionMeta";
+import { ExtensionMeta } from "./extension-metadata";
 
 export const loadPrivateKey = (keyPath: string): Promise<string> => {
     return fs.promises.readFile(keyPath, "utf8");
