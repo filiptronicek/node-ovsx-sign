@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
-import * as fs from "fs";
-import * as path from "path";
-import * as os from "os";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
 
 export const download = async (url: string, options: { filename?: string; foldername?: string }) => {
     const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "ovsx-"));

@@ -1,5 +1,5 @@
-import * as fs from "fs";
 import fetch from "node-fetch";
+import * as fs from "node:fs";
 
 import { DEFAULT_REGISTRY_URL } from "./constants";
 import { download } from "./download";

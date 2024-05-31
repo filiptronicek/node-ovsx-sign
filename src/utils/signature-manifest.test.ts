@@ -1,6 +1,6 @@
-import { generateSignatureManifest } from "./signature-manifest";
 import * as fs from "node:fs/promises";
 import { download } from "./download";
+import { generateSignatureManifest } from "./signature-manifest";
 import { extractFileAsBufferUsingStreams } from "./zip";
 
 jest.setTimeout(20_000);

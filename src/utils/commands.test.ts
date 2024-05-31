@@ -1,9 +1,8 @@
-import { unlink } from "fs/promises";
+import * as fs from "node:fs/promises";
+import * as os from "node:os";
+import * as path from "node:path";
 import { keyPair, sign, verify } from "./commands";
 import { download } from "./download";
-import * as fs from "fs/promises";
-import * as path from "path";
-import * as os from "os";
 
 jest.setTimeout(20_000);
 
@@ -23,10 +22,10 @@ describe("e2e test", () => {
         expect(await verify(extensionDestination, archiveOutputPath, true, { publicKey: publicKeyPath })).toBe(true);
 
         // Clean up
-        await unlink(extensionDestination);
-        await unlink(archiveOutputPath);
-        await unlink(privateKeyPath);
-        await unlink(publicKeyPath);
+        await fs.unlink(extensionDestination);
+        await fs.unlink(archiveOutputPath);
+        await fs.unlink(privateKeyPath);
+        await fs.unlink(publicKeyPath);
         console.log(`Deleted ${extensionDestination}`);
     });
 });

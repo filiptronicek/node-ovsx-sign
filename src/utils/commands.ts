@@ -1,13 +1,13 @@
-import * as fs from "fs";
+import * as crypto from "crypto";
+import * as fs from "node:fs";
+import { SIGNATURE_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
 import { ExtensionSignatureVerificationError } from "./errors";
+import { getExtensionMeta } from "./extension-metadata";
 import { downloadPublicKey, loadPrivateKey, loadPublicKey } from "./keys";
 import { signFile } from "./sign";
-import { SIGNATURE_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
-import { verifySignature } from "./verify";
-import * as crypto from "crypto";
-import { getExtensionMeta } from "./extension-metadata";
-import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 import { generateSignatureManifest } from "./signature-manifest";
+import { verifySignature } from "./verify";
+import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 
 /**
  * Sign an extension package. The signature is saved to `extension.sigzip`
