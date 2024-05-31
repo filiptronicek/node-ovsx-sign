@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 
 import { DEFAULT_REGISTRY_URL } from "./constants";
 import { download } from "./download";
+import { getMarketplaceEndpoint } from "./endpoints";
 import { ExtensionMeta } from "./extension-metadata";
 
 export const loadPrivateKey = (keyPath: string): Promise<string> => {
@@ -23,7 +24,7 @@ const ensureValidPublicKeyUrl = async (url: string): Promise<string> => {
 };
 
 const getPulicKeyUrl = async (extension: ExtensionMeta): Promise<string> => {
-    const registryUrl = new URL(process.env.OVSX_REGISTRY_URL || DEFAULT_REGISTRY_URL);
+    const registryUrl = new URL(getMarketplaceEndpoint());
     const defaultPublicKeyUrl = registryUrl.toString() + `file/public.pem`;
 
     const registryApiEndpoint =

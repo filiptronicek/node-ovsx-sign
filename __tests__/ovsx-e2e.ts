@@ -1,14 +1,12 @@
 import { PublicGalleryAPI } from "@vscode/vsce/out/publicgalleryapi";
 import { ExtensionQueryFlags } from "azure-devops-node-api/interfaces/GalleryInterfaces";
 
-import { DEFAULT_REGISTRY_URL, EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from "../src/utils/constants";
 import { verify } from "../src";
+import { EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from "../src/utils/constants";
 import { download } from "../src/utils/download";
+import { getMarketplaceEndpoint } from "../src/utils/endpoints";
 
-const openGalleryApi = new PublicGalleryAPI(
-    `${process.env.OVSX_REGISTRY_URL || DEFAULT_REGISTRY_URL}/vscode`,
-    "3.0-preview.1",
-);
+const openGalleryApi = new PublicGalleryAPI(`${getMarketplaceEndpoint()}/vscode`, "3.0-preview.1");
 openGalleryApi.client["_allowRetries"] = true;
 openGalleryApi.client["_maxRetries"] = 5;
 openGalleryApi.post = (url, data, additionalHeaders) =>
