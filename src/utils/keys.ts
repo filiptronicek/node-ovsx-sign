@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import * as fs from "node:fs";
 
-import { DEFAULT_REGISTRY_URL } from "./constants";
 import { download } from "./download";
 import { getMarketplaceEndpoint } from "./endpoints";
 import { ExtensionMeta } from "./extension-metadata";
