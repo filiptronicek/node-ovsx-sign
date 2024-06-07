@@ -6,8 +6,8 @@ This package is an open-source alternative to Microsoft's proprietary `@vscode/v
 
 Both the `@vscode/vsce-sign` package and `node-ovsx-sign` are pluggable into VS Code's signature verification process and work as expected. That said, there are a few important differences between the two:
 
-- `node-ovsx-sign` uses PKCS #8 private keys for signing extension archives while `@vscode/vsce-sign` uses PKCS #7 for signatures. This also means that `node-ovsx-sign` signatures are stored in a `.signature.sig` file, while `@vscode/vsce-sign` signatures are stored in a `.signature.p7s` file.[^1]
-- `node-ovsx-sign` does not offer any platform-specific packages, because it does not ship any binaries.
+-   `node-ovsx-sign` uses PKCS #8 private keys for signing extension archives while `@vscode/vsce-sign` uses PKCS #7 for signatures. This also means that `node-ovsx-sign` signatures are stored in a `.signature.sig` file, while `@vscode/vsce-sign` signatures are stored in a `.signature.p7s` file.[^1]
+-   `node-ovsx-sign` does not offer any platform-specific packages, because it does not ship any binaries.
 
 Additionally, both packages produce interoperable signature manifests which include the size and SHA 256 digest of every file inside of the `.vsix` extension archive. These are stored in a `.signature.manifest` JSON file.
 

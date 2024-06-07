@@ -2,7 +2,7 @@ import * as archiver from "archiver";
 import * as fs from "node:fs";
 import { Readable, Writable } from "node:stream";
 import * as unzipper from "unzipper";
-import { Entry, open, ZipFile } from 'yauzl';
+import { Entry, open, ZipFile } from "yauzl";
 
 export const zipBuffers = async (files: { filename: string; buffer: Buffer }[]): Promise<Buffer> => {
     return new Promise<Buffer>((resolve, reject) => {
@@ -69,9 +69,9 @@ export const extractFileAsBufferUsingStreams = async (zipFilePath: string, fileN
 async function bufferStream(stream: Readable): Promise<Buffer> {
     return await new Promise((resolve, reject) => {
         const buffers: Buffer[] = [];
-        stream.on('data', buffer => buffers.push(buffer));
-        stream.once('error', reject);
-        stream.once('end', () => resolve(Buffer.concat(buffers)));
+        stream.on("data", (buffer) => buffers.push(buffer));
+        stream.once("error", reject);
+        stream.once("end", () => resolve(Buffer.concat(buffers)));
     });
 }
 
@@ -79,16 +79,16 @@ async function bufferStream(stream: Readable): Promise<Buffer> {
 // Changes: removed the `filter` parameter, renamed some variables and prevented returning lowercase keys
 export async function readZip(packagePath: string): Promise<Map<string, Buffer>> {
     const zipfile = await new Promise<ZipFile>((c, e) =>
-        open(packagePath, { lazyEntries: true }, (err, zipfile) => (err ? e(err) : c(zipfile!)))
+        open(packagePath, { lazyEntries: true }, (err, zipfile) => (err ? e(err) : c(zipfile!))),
     );
 
     return await new Promise((resolve, reject) => {
         const result = new Map<string, Buffer>();
 
-        zipfile.once('close', () => resolve(result));
+        zipfile.once("close", () => resolve(result));
 
         zipfile.readEntry();
-        zipfile.on('entry', (entry: Entry) => {
+        zipfile.on("entry", (entry: Entry) => {
             const name = entry.fileName;
 
             zipfile.openReadStream(entry, (err, stream) => {
@@ -97,7 +97,7 @@ export async function readZip(packagePath: string): Promise<Map<string, Buffer>>
                     return reject(err);
                 }
 
-                bufferStream(stream!).then(buffer => {
+                bufferStream(stream!).then((buffer) => {
                     result.set(name, buffer);
                     zipfile.readEntry();
                 });
