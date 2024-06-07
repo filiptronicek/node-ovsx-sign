@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
 import * as fs from "node:fs";
-import { SIGNATURE_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
+import { SIGNATURE_FILE_NAME, SIGNATURE_MANIFEST_FILE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
 import { ExtensionSignatureVerificationError } from "./errors";
 import { getExtensionMeta } from "./extension-metadata";
 import { downloadPublicKey, loadPrivateKey, loadPublicKey } from "./keys";
@@ -30,7 +30,7 @@ export const sign = async (
 
     const files = [
         { filename: SIGNATURE_FILE_NAME, buffer: signature },
-        { filename: ".signature.manifest", buffer: Buffer.from(JSON.stringify(signatureManifest)) },
+        { filename: SIGNATURE_MANIFEST_FILE_NAME, buffer: Buffer.from(JSON.stringify(signatureManifest)) },
         // We leave the p7s file empty because VS Code expects it to be present
         // https://github.com/microsoft/vscode/blob/0ead1f80c9e0d6ea0732c40faea3095c6f7f165a/src/vs/platform/extensionManagement/node/extensionDownloader.ts#L157
         { filename: ".signature.p7s", buffer: Buffer.alloc(0) },
