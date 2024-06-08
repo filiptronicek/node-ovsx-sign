@@ -1,6 +1,6 @@
 {
   "name": "node-ovsx-sign",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "A package for signing and verifying VS Code extensions",
   "main": "lib/index",
   "types": "lib/index",
