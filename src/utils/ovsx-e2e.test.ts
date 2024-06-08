@@ -40,7 +40,7 @@ describe("Open VSX e2e", () => {
 
             console.time("verify");
             const verificationResult = await verify(packageLocation, signatureLocation, true, {
-                verifySignatureManifest: false, // change after next open-vsx.org release
+                verifySignatureManifest: false, // todo(ft): change after next open-vsx.org release
             });
             console.timeEnd("verify");
             expect(verificationResult).toBe(true);
