@@ -1,10 +1,10 @@
 import { PublicGalleryAPI } from "@vscode/vsce/out/publicgalleryapi";
 import { ExtensionQueryFlags } from "azure-devops-node-api/interfaces/GalleryInterfaces";
 
-import { verify } from "../src";
-import { EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from "../src/utils/constants";
-import { download } from "../src/utils/download";
-import { getMarketplaceEndpoint } from "../src/utils/endpoints";
+import { verify } from "../";
+import { EXTENSION_PACKAGE_NAME, SIGNED_ARCHIVE_NAME } from "./constants";
+import { download } from "./download";
+import { getMarketplaceEndpoint } from "./endpoints";
 
 const openGalleryApi = new PublicGalleryAPI(`${getMarketplaceEndpoint()}/vscode`, "3.0-preview.1");
 openGalleryApi.client["_allowRetries"] = true;
@@ -20,8 +20,8 @@ const extension = {
 
 jest.setTimeout(20_000);
 
-describe("extensionTest", () => {
-    test.skip("be able to download an extension archive, its signature and public key from Open VSX and verify the archive", async () => {
+describe("Open VSX e2e", () => {
+    it("downloads an extension archive, its signature and public key from Open VSX and verifies the archive", async () => {
         const [ovsxExtension] = await Promise.allSettled([openGalleryApi.getExtension(extension.id, flags)]);
         if (ovsxExtension.status === "fulfilled") {
             const vsixUrl = ovsxExtension.value.versions[0].files.find(
@@ -39,7 +39,9 @@ describe("extensionTest", () => {
             const signatureLocation = await download(vsixSignature.source, { filename: SIGNED_ARCHIVE_NAME });
 
             console.time("verify");
-            const verificationResult = await verify(packageLocation, signatureLocation);
+            const verificationResult = await verify(packageLocation, signatureLocation, true, {
+                verifySignatureManifest: false, // change after next open-vsx.org release
+            });
             console.timeEnd("verify");
             expect(verificationResult).toBe(true);
         }

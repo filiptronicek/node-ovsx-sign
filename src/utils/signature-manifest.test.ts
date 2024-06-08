@@ -8,10 +8,10 @@ import { ExtensionSignatureVerificationError } from "./errors";
 jest.setTimeout(40_000);
 
 describe("signatureManifestTest", () => {
-    it("should be able to generate a signature manifest file", async () => {
+    it("generates a signature manifest file", async () => {
         const extensionDestination = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.7.11511013/1717064437177/Microsoft.VisualStudio.Services.VSIXPackage",
-            {},
+            { filename: "extension.vsix" },
         );
         const signatureArchivePath = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.7.11511013/1717064437177/Microsoft.VisualStudio.Services.VsixSignature",
@@ -33,10 +33,10 @@ describe("signatureManifestTest", () => {
         await fs.unlink(signatureArchivePath);
     });
 
-    it("should be able to validate an invalid manifest", async () => {
+    it("properly validates an invalid manifest", async () => {
         const extensionDestination = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.8.0/1717626840538/Microsoft.VisualStudio.Services.VSIXPackage",
-            {},
+            { filename: "extension.vsix" },
         );
         const signatureArchivePath = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.7.11511013/1717064437177/Microsoft.VisualStudio.Services.VsixSignature",
@@ -55,10 +55,10 @@ describe("signatureManifestTest", () => {
         await fs.unlink(signatureArchivePath);
     });
 
-    it("should detect a malformed manifest", async () => {
+    it("detects a malformed manifest", async () => {
         const extensionDestination = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.8.0/1717626840538/Microsoft.VisualStudio.Services.VSIXPackage",
-            {},
+            { filename: "extension.vsix" },
         );
 
         await expect(verifyManifest({ allSignatures: "totallyValid" } as any, extensionDestination)).rejects.toThrow(

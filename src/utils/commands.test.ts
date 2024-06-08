@@ -19,7 +19,12 @@ describe("e2e test", () => {
 
         await sign(extensionDestination, privateKeyPath, { output: archiveOutputPath });
 
-        expect(await verify(extensionDestination, archiveOutputPath, true, { publicKey: publicKeyPath })).toBe(true);
+        expect(
+            await verify(extensionDestination, archiveOutputPath, true, {
+                publicKey: publicKeyPath,
+                verifySignatureManifest: true,
+            }),
+        ).toBe(true);
 
         // Clean up
         await fs.unlink(extensionDestination);
