@@ -5,7 +5,7 @@ import { ExtensionSignatureVerificationError } from "./errors";
 import { getExtensionMeta } from "./extension-metadata";
 import { downloadPublicKey, loadPrivateKey, loadPublicKey } from "./keys";
 import { signFile } from "./sign";
-import { generateSignatureManifest } from "./signature-manifest";
+import { generateManifest, verifyManifest } from "./signature-manifest";
 import { verifySignature } from "./verify";
 import { extractFileAsBufferUsingStreams, zipBuffers } from "./zip";
 
@@ -26,7 +26,7 @@ export const sign = async (
     const outputPath = options?.output ?? `./${SIGNED_ARCHIVE_NAME}`;
 
     const signature = await signFile(extensionFile, privateKey);
-    const signatureManifest = await generateSignatureManifest(vsixFilePath);
+    const signatureManifest = await generateManifest(vsixFilePath);
 
     const files = [
         { filename: SIGNATURE_FILE_NAME, buffer: signature },
@@ -56,6 +56,7 @@ export const verify = async (
     verbose = false,
     options?: {
         publicKey?: string;
+        verifySignatureManifest?: boolean;
     },
 ): Promise<boolean> => {
     if (!fs.existsSync(vsixFilePath)) {
@@ -79,7 +80,6 @@ export const verify = async (
 
     verbose && console.info("Getting extension id from extension manifest");
     const extensionMetaFromManifest = await getExtensionMeta(vsixFilePath);
-
     if (!extensionMetaFromManifest.id) {
         throw new ExtensionSignatureVerificationError(
             "ExtensionManifestIsInvalid",
@@ -102,9 +102,36 @@ export const verify = async (
         );
     });
 
+    if (options?.verifySignatureManifest) {
+        const manifest = JSON.parse(
+            (
+                await extractFileAsBufferUsingStreams(signatureArchiveFilePath, SIGNATURE_MANIFEST_FILE_NAME).catch(
+                    () => {
+                        throw new ExtensionSignatureVerificationError(
+                            "SignatureManifestIsMissing",
+                            false,
+                            "The signature manifest is missing from the signature archive",
+                        );
+                    },
+                )
+            ).toString("utf-8"),
+        );
+
+        verbose && console.info("Verifying signature manifest");
+        const signatureManifestValid = await verifyManifest(manifest, vsixFilePath);
+        if (!signatureManifestValid) {
+            throw new ExtensionSignatureVerificationError(
+                "SignatureManifestIsInvalid",
+                true,
+                "The signature manifest is not valid",
+            );
+        }
+
+        console.info("Signature manifest is valid");
+    }
+
     verbose && console.info("Verifying signature");
     const signatureValid = await verifySignature(extensionFile, publicKey, signature);
-
     if (!signatureValid) {
         console.error("Signature is not valid");
         throw new ExtensionSignatureVerificationError("SignatureManifestIsInvalid", true, "The signature is not valid");

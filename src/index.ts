@@ -11,15 +11,28 @@ export default function (argv: string[]): void {
         .description("Verify an extension package")
         .arguments("<extension-package> <signature-archive>")
         .option("-p, --public-key <public-key>", "The path to the public key to use for verification")
+        .option(
+            "-m, --verify-signature-manifest",
+            "Verify the signature manifest in the signature archive (will be the default in a future release)",
+        )
         .option("-v, --verbose", "Capture verbose detail in the event of an error")
-        .action(async (vsixFilePath: string, signatureArchiveFilePath: string, { publicKey, verbose }) => {
-            try {
-                await verify(vsixFilePath, signatureArchiveFilePath, verbose, { publicKey });
-            } catch (e) {
-                console.error(e.message);
-                process.exit(1);
-            }
-        });
+        .action(
+            async (
+                vsixFilePath: string,
+                signatureArchiveFilePath: string,
+                { publicKey, verifySignatureManifest, verbose },
+            ) => {
+                try {
+                    await verify(vsixFilePath, signatureArchiveFilePath, verbose, {
+                        publicKey,
+                        verifySignatureManifest,
+                    });
+                } catch (e) {
+                    console.error(e.message);
+                    process.exit(1);
+                }
+            },
+        );
 
     const signCmd = program.command("sign");
     signCmd
