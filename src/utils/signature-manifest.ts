@@ -71,7 +71,8 @@ export const verifyManifest = async (
     manifest: VsixSignatureManifest,
     extensionPackagePath: string,
 ): Promise<boolean> => {
-    if (!vsixSignatureManifestSchema.safeParse(manifest)) {
+    const { success: isManifestFormatValid } = vsixSignatureManifestSchema.safeParse(manifest);
+    if (!isManifestFormatValid) {
         throw new ExtensionSignatureVerificationError(
             "SignatureManifestIsInvalid",
             true,

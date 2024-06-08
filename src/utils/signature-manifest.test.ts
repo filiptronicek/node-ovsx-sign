@@ -3,11 +3,12 @@ import { SIGNATURE_MANIFEST_FILE_NAME } from "./constants";
 import { download } from "./download";
 import { generateManifest, verifyManifest } from "./signature-manifest";
 import { extractFileAsBufferUsingStreams } from "./zip";
+import { ExtensionSignatureVerificationError } from "./errors";
 
-jest.setTimeout(20_000);
+jest.setTimeout(40_000);
 
 describe("signatureManifestTest", () => {
-    test("be able to generate a signature manifest file", async () => {
+    it("should be able to generate a signature manifest file", async () => {
         const extensionDestination = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.7.11511013/1717064437177/Microsoft.VisualStudio.Services.VSIXPackage",
             {},
@@ -32,7 +33,7 @@ describe("signatureManifestTest", () => {
         await fs.unlink(signatureArchivePath);
     });
 
-    test("be able to validate an invalid manifest", async () => {
+    it("should be able to validate an invalid manifest", async () => {
         const extensionDestination = await download(
             "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.8.0/1717626840538/Microsoft.VisualStudio.Services.VSIXPackage",
             {},
@@ -52,5 +53,19 @@ describe("signatureManifestTest", () => {
         // Clean up
         await fs.unlink(extensionDestination);
         await fs.unlink(signatureArchivePath);
+    });
+
+    it("should detect a malformed manifest", async () => {
+        const extensionDestination = await download(
+            "https://ms-python.gallerycdn.vsassets.io/extensions/ms-python/python/2024.8.0/1717626840538/Microsoft.VisualStudio.Services.VSIXPackage",
+            {},
+        );
+
+        await expect(verifyManifest({ allSignatures: "totallyValid" } as any, extensionDestination)).rejects.toThrow(
+            ExtensionSignatureVerificationError,
+        );
+
+        // Clean up
+        await fs.unlink(extensionDestination);
     });
 });
