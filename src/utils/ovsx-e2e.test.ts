@@ -39,9 +39,7 @@ describe("Open VSX e2e", () => {
             const signatureLocation = await download(vsixSignature.source, { filename: SIGNED_ARCHIVE_NAME });
 
             console.time("verify");
-            const verificationResult = await verify(packageLocation, signatureLocation, true, {
-                verifySignatureManifest: false, // todo(ft): change after next open-vsx.org release
-            });
+            const verificationResult = await verify(packageLocation, signatureLocation, true);
             console.timeEnd("verify");
             expect(verificationResult).toBe(true);
         }
