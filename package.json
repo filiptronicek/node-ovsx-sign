@@ -46,7 +46,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@vscode/vsce": "^2.26.1",
+    "@vscode/vsce": "^2.27.0",
     "archiver": "^7.0.1",
     "commander": "^10.0.1",
     "node-fetch": "2.7.0",
